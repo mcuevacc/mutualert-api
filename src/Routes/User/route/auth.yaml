@@ -1,0 +1,17 @@
+## --- User Auth Login
+user/auth/login:
+  path: /login
+  controller: App\Controller\User\AuthController::login
+  methods: [POST]
+
+## --- User Auth Token
+user/auth/token:
+  path: /token
+  controller: App\Controller\User\AuthController::token
+  methods: [GET]
+
+## --- User Auth SignUp
+user/auth/signup:
+  path: /signup
+  controller: App\Controller\User\AuthController::signUp
+  methods: [POST]

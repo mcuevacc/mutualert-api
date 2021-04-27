@@ -1,0 +1,23 @@
+## --- User Account Exist
+user/account/exist:
+  path: /exist
+  controller: App\Controller\User\AccountController::exist
+  methods: [POST]
+
+## --- User Account CheckCode
+user/account/checkcode:
+  path: /checkcode
+  controller: App\Controller\User\AccountController::checkCode
+  methods: [POST]
+
+## --- User Account NewPassword
+user/account/newpassword:
+  path: /npwd
+  controller: App\Controller\User\AccountController::newPassword
+  methods: [POST]
+
+## --- User Account UpdatePassword
+user/account/updatepassword:
+  path: /upwd
+  controller: App\Controller\User\AccountController::updatePassword
+  methods: [POST]

@@ -1,0 +1,11 @@
+## --- User Profile Read
+user/profile/read:
+  path: /read
+  controller: App\Controller\User\ProfileController::read
+  methods: [GET]
+
+## --- User Profile Edit
+user/profile/edit:
+  path: /edit
+  controller: App\Controller\User\ProfileController::edit
+  methods: [POST]

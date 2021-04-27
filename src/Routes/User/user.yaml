@@ -1,0 +1,14 @@
+## --- User Auth
+UserAuth:
+    resource: "route/auth.yaml"
+    prefix: /auth/
+
+## --- User Account
+UserAccount:
+    resource: "route/account.yaml"
+    prefix: /account/
+
+## --- User Profile
+UserProfile:
+    resource: "route/profile.yaml"
+    prefix: /profile/
