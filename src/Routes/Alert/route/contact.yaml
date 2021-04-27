@@ -1,0 +1,35 @@
+## --- Alert Contact List
+alert/contact/list:
+  path: /l
+  controller: App\Controller\Alert\ContactController::list
+  methods: [GET]
+
+## --- Alert Contact Read
+alert/contact/read:
+  path: /r/{id}
+  controller: App\Controller\Alert\ContactController::read
+  requirements:
+    id: '\d+'
+  methods: [GET]
+
+## --- Alert Contact Create
+alert/contact/create:
+  path: /c
+  controller: App\Controller\Alert\ContactController::create
+  methods: [POST]
+
+## --- Alert Contact Update
+alert/contact/update:
+  path: /u/{id}
+  controller: App\Controller\Alert\ContactController::update
+  requirements:
+    id: '\d+'
+  methods: [PUT]
+
+## --- Alert Contact Delete
+alert/contact/delete:
+  path: /d/{id}
+  controller: App\Controller\Alert\ContactController::delete
+  requirements:
+    id: '\d+'
+  methods: [DELETE]

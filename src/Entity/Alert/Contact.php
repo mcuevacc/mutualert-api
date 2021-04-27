@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Contact
  * @ORM\Entity
  * @ORM\Table(name="Alert_Contact", uniqueConstraints={
+ *   @ORM\UniqueConstraint(name="id_user_alias", columns={"id_user","alias"}),
  *   @ORM\UniqueConstraint(name="id_user_phone", columns={"id_user","phone"})
  * })
  */
@@ -23,16 +24,17 @@ class Contact
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User\Account", inversedBy="contacts")
+     * @ORM\JoinColumn(name="id_user", referencedColumnName="id")
      */
     private $idUser;
 
     /**
      * @ORM\Column(type="string", length=250)
      */
-    private $fullname;
+    private $alias;
 
     /**
-     * @ORM\Column(type="string", length=20, unique=true))
+     * @ORM\Column(type="string", length=20)
      */
     private $phone;
 
@@ -44,15 +46,10 @@ class Contact
 
     public function asArray($filtro=NULL): ?array
     {
-        if($this->idContact){
-            $fullname = $this->idContact->getProfile()->getFullName();
-            $phone = $this->idContact->getUsername();
-        }
-
         $response = [
             'id' => $this->id,
-            'fullname' => $fullname ?? $this->fullname,
-            'phone' => $phone ?? $this->phone,
+            'alias' => $this->alias,
+            'phone' => $this->phone,
         ];
 
         if($filtro)
@@ -66,14 +63,14 @@ class Contact
         return $this->id;
     }
 
-    public function getFullname(): ?string
+    public function getAlias(): ?string
     {
-        return $this->fullname;
+        return $this->alias;
     }
 
-    public function setFullname(string $fullname): self
+    public function setAlias(string $alias): self
     {
-        $this->fullname = $fullname;
+        $this->alias = $alias;
 
         return $this;
     }

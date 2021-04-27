@@ -1,0 +1,4 @@
+## --- Alert Contact
+AlertContact:
+    resource: "route/contact.yaml"
+    prefix: /contact/

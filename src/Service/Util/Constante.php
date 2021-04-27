@@ -8,6 +8,7 @@ class Constante
 
     const PHONE_LENGTH = 9; //Logintud de un telefonico
     const USER_CODE_TIME = 60*15; //Duracion de validez del codigo de usuario
+    const ALERT_CONTACT_MAX = 5; //Maxima cantidad de contactos
     const MAX_FILE_SIZE = 5*1024**2; //Tamaño máximo de archivo permitido
     const IMAGE_EXTENSIONS = ['png', 'jpg']; // Extensiones permitidas para las imagenes
 

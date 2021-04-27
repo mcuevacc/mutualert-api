@@ -43,7 +43,7 @@ class Read
 
 		return $sentencia;
 	}
-    /*
+
 	// --- VER ENTIDAD ---
 	public function findEntitys($entidad,$condicion,$respuesta=[]){
 		try{
@@ -426,6 +426,5 @@ class Read
 					 'msg'=>$error
 					];
 		 }
-	 }
-     */
+	}
 }

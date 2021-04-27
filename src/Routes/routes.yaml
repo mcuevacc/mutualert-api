@@ -2,3 +2,8 @@
 User:
     resource: "User/user.yaml"
     prefix:   /user/
+
+# --- Alert
+Alert:
+    resource: "Alert/alert.yaml"
+    prefix:   /alert/
