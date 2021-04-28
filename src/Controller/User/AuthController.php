@@ -30,7 +30,7 @@ class AuthController extends AbstractController
             $user = $this->getDoctrine()->getRepository('App:User\Account')->findOneByUsername($username);
             if($user && password_verify($password, $user->getPassword())){
                 if(!$user->getIsActive()){
-                    return $this->json(['success'=>FALSE,'msg'=>'user inactive!'], Constante::HTTP_CONFLICT);
+                    return $this->json(['success'=>FALSE,'msg'=>'Usario inactivo'], Constante::HTTP_CONFLICT);
                 }
 
                 return $this->json([
@@ -41,7 +41,7 @@ class AuthController extends AbstractController
                     ]]);
             }
 
-            return $this->json(['success'=>false, 'msg'=>'¡username or password incorrect!'], Constante::HTTP_NOT_FOUND);
+            return $this->json(['success'=>false, 'msg'=>'Teléfono o contraseña incorrecta'], Constante::HTTP_NOT_FOUND);
         }catch (\Exception $e){
             return $this->json(['success'=>false,
                                 'msg'=>$e->getMessage()],

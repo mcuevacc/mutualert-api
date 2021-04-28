@@ -24,7 +24,7 @@ class ContactController extends AbstractController
             $filtro = 'id,alias,phone';
             $resp = $read->findEntitys('Alert\Contact', $condicion,['filtro'=>$filtro]);
             if(!$resp['success']){
-                return $this->json($resp, Constante::HTTP_CONFLICT);
+                return $this->json($resp, Constante::HTTP_SERVER_ERROR);
             }
             return $this->json($resp);
 
@@ -46,7 +46,7 @@ class ContactController extends AbstractController
             $filtro = 'id,alias,phone';
             $resp = $read->findEntitys('Alert\Contact', $condicion,['filtro'=>$filtro]);
             if(!$resp['success']){
-                return $this->json($resp, Constante::HTTP_CONFLICT);
+                return $this->json($resp, Constante::HTTP_SERVER_ERROR);
             }
 
             if(!count($resp['data'])){
@@ -83,7 +83,7 @@ class ContactController extends AbstractController
 
             if( count($user->getContacts()) >= Constante::ALERT_CONTACT_MAX ){
                 return $this->json(['success'=>false,
-                                    'msg'=>'Excedió la cantidad máxmima de contactos permitidos'],
+                                    'msg'=>'Excedió la cantidad máxima de contactos permitidos'],
                     Constante::HTTP_CONFLICT);
             }
 
