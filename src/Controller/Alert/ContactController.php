@@ -21,8 +21,10 @@ class ContactController extends AbstractController
             $user = $decoded['data'];
 
             $condicion['where'] = 'idUser^'.$user['id'];
-            $filtro = 'id,alias,phone';
-            $resp = $read->findEntitys('Alert\Contact', $condicion,['filtro'=>$filtro]);
+
+            $respuesta = ['order'=>'id^ASC',
+                        'filtro'=>'id,alias,phone'];
+            $resp = $read->findEntitys('Alert\Contact', $condicion, $respuesta);
             if(!$resp['success']){
                 return $this->json($resp, Constante::HTTP_SERVER_ERROR);
             }
