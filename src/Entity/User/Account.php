@@ -42,6 +42,11 @@ class Account
     private $profile;
 
     /**
+     * @ORM\OneToOne(targetEntity="App\Entity\User\State", mappedBy="idUser")
+     */
+    private $state;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Alert\Contact", mappedBy="idUser")
      */
     private $contacts;
@@ -49,6 +54,7 @@ class Account
     public function __construct()
     {
         $this->contacts = new ArrayCollection();
+        $this->state = new ArrayCollection();
     }
     
     public function asArray($filtro=NULL): ?array
@@ -123,6 +129,28 @@ class Account
         }
 
         $this->profile = $profile;
+
+        return $this;
+    }
+
+    public function getState(): ?State
+    {
+        return $this->state;
+    }
+
+    public function setState(?State $state): self
+    {
+        // unset the owning side of the relation if necessary
+        if ($state === null && $this->state !== null) {
+            $this->state->setIdUser(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($state !== null && $state->getIdUser() !== $this) {
+            $state->setIdUser($this);
+        }
+
+        $this->state = $state;
 
         return $this;
     }

@@ -1,0 +1,5 @@
+## --- User State Location
+user/state/location:
+  path: /location
+  controller: App\Controller\User\StateController::location
+  methods: [PUT]

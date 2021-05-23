@@ -12,3 +12,8 @@ UserAccount:
 UserProfile:
     resource: "route/profile.yaml"
     prefix: /profile/
+
+## --- User State
+UserState:
+    resource: "route/state.yaml"
+    prefix: /state/
