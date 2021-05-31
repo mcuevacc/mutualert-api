@@ -20,7 +20,7 @@ class StateController extends AbstractController
             $user = $decoded['data'];
 
             $cadena = 'latitude,longitude,accuracy';
-            $sentencia = $read->getData($cadena, 'PUT');
+            $sentencia = $read->getData($cadena);
             eval($sentencia);
             if(!$existen){
                 return $this->json(['success'=>false,

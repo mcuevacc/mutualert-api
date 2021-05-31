@@ -1,0 +1,11 @@
+## --- Alert Emergency Start
+alert/emergency/start:
+  path: /start
+  controller: App\Controller\Alert\EmergencyController::start
+  methods: [POST]
+
+## --- Alert Emergency Stop
+alert/emergency/stop:
+  path: /stop
+  controller: App\Controller\Alert\EmergencyController::stop
+  methods: [POST]

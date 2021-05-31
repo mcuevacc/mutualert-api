@@ -15,3 +15,9 @@ user/auth/signup:
   path: /signup
   controller: App\Controller\User\AuthController::signUp
   methods: [POST]
+
+## --- User Auth Valid
+user/auth/valid:
+  path: /valid
+  controller: App\Controller\User\AuthController::valid
+  methods: [POST]

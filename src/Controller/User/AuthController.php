@@ -37,6 +37,7 @@ class AuthController extends AbstractController
                     'success' => true,
                     'data'=>[
                         'token' => $jwt->getToken($user),
+                        'alert' => $user->getState()->getInAlert(),
                         'profile' => $user->getProfile()->asArray(['apepat','apemat','nombres','email','avatar'])
                     ]]);
             }
@@ -60,6 +61,7 @@ class AuthController extends AbstractController
                 'success' => true,
                 'data'=>[
                     'token' => $jwt->getToken($user),
+                    'alert' => $user->getState()->getInAlert(),
                     'profile' => $user->getProfile()->asArray(['apepat','apemat','nombres','email','avatar'])
                 ]
             ]);
@@ -140,9 +142,32 @@ class AuthController extends AbstractController
                 'success' => true,
                 'data'=>[
                     'token' => $jwt->getToken($account),
+                    'alert' => $state->getInAlert(),
                     'profile' => $profile->asArray(['apepat','apemat','nombres','email','avatar'])
                 ]]);
         
+        }catch (\Exception $e){
+            return $this->json(['success'=>false,
+                                'msg'=>$e->getMessage()],
+                Constante::HTTP_SERVER_ERROR);
+        }
+    }
+    
+    public function valid(Request $request, Read $read, Jwt $jwt): Response
+    {
+        try{
+            $cadena = 'token';
+            $sentencia = $read->getData($cadena);  
+            eval($sentencia);
+            if(!$existen){
+                return $this->json(['success'=>false,
+                                    'msg'=>'No se encontro al parametro ('.$faltante.')'],
+                    Constante::HTTP_BAD_REQUEST);
+            }
+
+            $decoded = $jwt->decodeToken($token);
+            return $this->json(['success'=>$decoded['success']]);
+
         }catch (\Exception $e){
             return $this->json(['success'=>false,
                                 'msg'=>$e->getMessage()],

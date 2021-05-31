@@ -2,3 +2,8 @@
 AlertContact:
     resource: "route/contact.yaml"
     prefix: /contact/
+
+## --- Alert Emergency
+AlertEmergency:
+    resource: "route/emergency.yaml"
+    prefix: /emergency/
