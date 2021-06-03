@@ -166,7 +166,7 @@ class AuthController extends AbstractController
             }
 
             $decoded = $jwt->decodeToken($token);
-            return $this->json(['success'=>$decoded['success']]);
+            return $this->json(['success' => $decoded['success']]);
 
         }catch (\Exception $e){
             return $this->json(['success'=>false,

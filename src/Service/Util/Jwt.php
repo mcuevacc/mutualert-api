@@ -22,6 +22,7 @@ class Jwt
         $payload = [
             "id" => $user->getId(),
             "username" => $user->getUsername(),
+            "domain" => $this->container->getParameter('app.domain'),
             "iat" => time(),
             "exp" => time() + (7*24*60*60)
         ];
