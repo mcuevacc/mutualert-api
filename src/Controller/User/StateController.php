@@ -8,11 +8,13 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\CRUD\Read;
 use App\Service\Util\Constante;
 use App\Service\Util\Jwt;
+use App\Service\EmergencyService;
+use App\Service\Api\SocketService;
 use App\Model\Object\Point;
 
 class StateController extends AbstractController
 {
-    public function location(Request $request, Read $read, Jwt $jwt): Response
+    public function location(Request $request, Read $read, Jwt $jwt, EmergencyService $emergencyService, SocketService $socketService): Response
     {
         try{
             $decoded = $jwt->decodeToken($request->headers->get('token'), true);
@@ -32,15 +34,45 @@ class StateController extends AbstractController
             $state->setGeoLocation(new Point($latitude, $longitude));
             $state->setAccuracyLocation($accuracy);
             $this->getDoctrine()->getManager()->persist($state);
-            $this->getDoctrine()->getManager()->flush();
 
             if($state->getInAlert()){
-                //$resp = $this->get('UserAlert')->UpdateAlertLocation($user);
-                //return $this->json($resp);
-            } 
+                $emergency = $this->getDoctrine()->getRepository('App:Alert\Emergency')->findOneBy([
+                    'idUser'=>$user->getId(),
+                    'isActive'=>true
+                ]);
+
+                $idsUser = $emergency->getAUserAlert();
+                if($user->getConfig()->getAlertOther() || !count($user->getContacts())){
+                    $newUsers = $emergencyService->getUsersNear($user->getId(), $state->getGeoLocation(), $idsUser);
+                    foreach($newUsers as $newUser){
+                        $idsUser[] = $newUser['id'];
+                    }
+                    $emergency->setAUserAlert($idsUser);
+                }
+                
+                $aLocation = $emergency->getALocation();
+                $aLocation[] = [
+                    'latitude'=>$latitude,
+                    'longitude'=>$longitude,
+                    'accuracy'=>$accuracy,
+                    'date'=>date_create()
+                ];
+                $emergency->setALocation($aLocation);
+                $this->getDoctrine()->getManager()->persist($emergency);
+
+                $data = $emergency->asArray(['id', 'apepat', 'apemat', 'nombres', 'avatar', 'phone', 'startedAt']);
+                $data['location'] = [
+                    'latitude'=>$latitude,
+                    'longitude'=>$longitude,
+                    'accuracy'=>$accuracy
+                ];
+                $socketService->send(['id'=>implode(',', $idsUser), 'event'=>Constante::EVENT_EMEGENCY_UPDATE, 'data'=>$data]);
+            }
+            $this->getDoctrine()->getManager()->flush();
+
             return $this->json(['success' => true]);
 
-        }catch (\Exception $e){
+        } catch (\Exception $e){
             return $this->json(['success'=>false,
                                 'msg'=>$e->getMessage()],
                 Constante::HTTP_SERVER_ERROR);

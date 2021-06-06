@@ -5,6 +5,7 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     app.domain: '%env(resolve:APP_DOMAIN)%'
+    app.socket: '%env(resolve:APP_SOCKET)%'
     app.jwt_key: '%env(resolve:APP_JWT_KEY)%'
     firebase.web_api_key: '%env(resolve:FIREBASE_WEB_API_KEY)%'
 

@@ -9,7 +9,7 @@ class PointStr extends FunctionNode {
     private $arg;
     
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker) {
-        return 'GeomFromText('.$this->arg->dispatch($sqlWalker).')';
+        return 'ST_GeomFromText('.$this->arg->dispatch($sqlWalker).')';
     }
 
     public function parse(\Doctrine\ORM\Query\Parser $parser) {

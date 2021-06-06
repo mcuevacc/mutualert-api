@@ -3,7 +3,6 @@
 namespace App\Service\Api;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use App\Util\Constante;
 use GuzzleHttp\Client;
 
 class FirebaseService

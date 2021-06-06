@@ -137,6 +137,14 @@ class AuthController extends AbstractController
             }
             $state = $state['data'];
 
+            $cadena = 'idUser/User\Account^'.$account->getId();
+            $config = $create->create('User\Config', ['cadena'=>$cadena]);
+            if( !$config['success'] ){
+                $this->getDoctrine()->getConnection()->rollBack();
+                return $this->json($config, Constante::HTTP_SERVER_ERROR);
+            }
+            $config = $config['data'];
+
             $this->getDoctrine()->getConnection()->commit();
             return $this->json([
                 'success' => true,

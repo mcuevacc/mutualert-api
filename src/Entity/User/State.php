@@ -49,7 +49,7 @@ class State
     public function asArray($filtro=NULL): ?array
     {
         $response = [
-            'inAlert' => $inAlert
+            'inAlert' => $this->inAlert
         ];
 
         if($filtro)
