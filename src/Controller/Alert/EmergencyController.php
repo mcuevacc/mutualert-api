@@ -15,6 +15,30 @@ use App\Model\Object\Point;
 
 class EmergencyController extends AbstractController
 {
+    public function list(Request $request, Jwt $jwt, EmergencyService $emergencyService): Response
+    {
+        try{
+            $decoded = $jwt->decodeToken($request->headers->get('token'));
+            if(!$decoded['success']) return $this->json($decoded, Constante::HTTP_UNAUTHORIZED);
+            $user = $decoded['data'];
+
+            $emergencys = $emergencyService->list($user['id']);
+            $data = [];
+            foreach($emergencys as $emergency){
+                $data = $emergency->asArray(['id', 'apepat', 'apemat', 'nombres', 'avatar', 'phone', 'startedAt']);
+                $aLocation = $emergency->getALocation();
+                $lastLocation = end($aLocation);
+                $data['location'] = ['latitude'=>$lastLocation['latitude'], 'longitude'=>$lastLocation['longitude'], 'accuracy'=>$lastLocation['accuracy']];
+            }
+            return $this->json(['success'=>true, 'data'=>$data]);
+
+        }catch (\Exception $e){
+            return $this->json(['success'=>false,
+                                'msg'=>$e->getMessage()],
+                Constante::HTTP_SERVER_ERROR);
+        }
+    }
+
     public function start(Request $request, Read $read, Jwt $jwt, EmergencyService $emergencyService, SocketService $socketService): Response
     {
         try{

@@ -13,6 +13,16 @@ class EmergencyService
         $this->em = $entityManager;
     }
 
+    public function list($uId) {
+        $consult = 'SELECT E
+                    FROM App:Alert\Emergency E
+                    WHERE E.isActive = 1
+                    AND E.idUser <> '.$uId.
+                    ' AND JSON_CONTAINS(E.aUserAlert, \''.$uId.'\') = 1';
+        $query = $this->em->createQuery($consult);
+        return $query->getResult();
+    }
+
     public function getIdsUser($uState, $uConfig, $uContacts, $uId, $uPhone) {
         $idsUsers = []; //Ids de los usuarios que seran notificados por la emergencia
 

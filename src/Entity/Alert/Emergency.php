@@ -42,12 +42,12 @@ class Emergency
     private $finishedAt;
 
     /**
-    * @ORM\Column(type="json_array")
+    * @ORM\Column(type="json")
     */
     private $aUserAlert=[];
 
     /**
-    * @ORM\Column(type="json_array")
+    * @ORM\Column(type="json")
     */
     private $aLocation=[];
 

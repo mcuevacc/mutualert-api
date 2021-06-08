@@ -1,3 +1,9 @@
+## --- Alert Emergency List
+alert/emergency/list:
+  path: /list
+  controller: App\Controller\Alert\EmergencyController::list
+  methods: [GET]
+
 ## --- Alert Emergency Start
 alert/emergency/start:
   path: /start
