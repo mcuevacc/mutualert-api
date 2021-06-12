@@ -25,10 +25,11 @@ class EmergencyController extends AbstractController
             $emergencys = $emergencyService->list($user['id']);
             $data = [];
             foreach($emergencys as $emergency){
-                $data = $emergency->asArray(['id', 'apepat', 'apemat', 'nombres', 'avatar', 'phone', 'startedAt']);
+                $dataAux = $emergency->asArray(['id', 'apepat', 'apemat', 'nombres', 'avatar', 'phone', 'startedAt']);
                 $aLocation = $emergency->getALocation();
                 $lastLocation = end($aLocation);
-                $data['location'] = ['latitude'=>$lastLocation['latitude'], 'longitude'=>$lastLocation['longitude'], 'accuracy'=>$lastLocation['accuracy']];
+                $dataAux['location'] = ['latitude'=>(double)$lastLocation['latitude'], 'longitude'=>(double)$lastLocation['longitude'], 'accuracy'=>(float)$lastLocation['accuracy']];
+                $data[] = $dataAux;
             }
             return $this->json(['success'=>true, 'data'=>$data]);
 
