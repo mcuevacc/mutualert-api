@@ -22,6 +22,8 @@ class Constante
     const HTTP_CONFLICT = 409; //Conflicto con la peticion del cliente
     const HTTP_SERVER_ERROR = 500; //Error interno en el servidor
 
+    const TYPE_EMEGENCY = "emergency"; // Tipo emergencia 
+
     const EVENT_EMEGENCY_INIT = "EMERGENCY_INIT"; //Evento que indica el inicio de la emergencia
     const EVENT_EMEGENCY_UPDATE = "EMERGENCY_UPDATE"; //Evento que indica una modificacion
     const EVENT_EMEGENCY_END = "EMERGENCY_END"; //Evento que indica el fin de la emergencia

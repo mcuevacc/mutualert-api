@@ -1,7 +1,9 @@
-## --- Alert Emergency List
-alert/emergency/list:
-  path: /list
-  controller: App\Controller\Alert\EmergencyController::list
+## --- Alert Emergency Read
+alert/emergency/read:
+  path: /r/{id}
+  controller: App\Controller\Alert\EmergencyController::read
+  requirements:
+    id: '\d+'
   methods: [GET]
 
 ## --- Alert Emergency Start

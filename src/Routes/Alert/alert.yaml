@@ -7,3 +7,9 @@ AlertContact:
 AlertEmergency:
     resource: "route/emergency.yaml"
     prefix: /emergency/
+
+## --- Alert Emergencies
+alert/emergencies:
+  path: /emergencies
+  controller: App\Controller\Alert\EmergencyController::list
+  methods: [GET]

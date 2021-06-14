@@ -29,6 +29,9 @@ class StateController extends AbstractController
                                     'msg'=>'No se encontro al parametro ('.$faltante.')'],
                     Constante::HTTP_BAD_REQUEST);
             }
+            $latitude = (float) $latitude;
+            $longitude = (float) $longitude;
+            $accuracy = (float) $accuracy;
 
             $state = $user->getState();
             $state->setGeoLocation(new Point($latitude, $longitude));
@@ -60,13 +63,19 @@ class StateController extends AbstractController
                 $emergency->setALocation($aLocation);
                 $this->getDoctrine()->getManager()->persist($emergency);
 
-                $data = $emergency->asArray(['id', 'apepat', 'apemat', 'nombres', 'avatar', 'phone', 'startedAt']);
-                $data['location'] = [
+                $location = [
                     'latitude'=>$latitude,
                     'longitude'=>$longitude,
                     'accuracy'=>$accuracy
                 ];
-                $socketService->send(['id'=>implode(',', $idsUser), 'event'=>Constante::EVENT_EMEGENCY_UPDATE, 'data'=>$data]);
+
+                $dataUser = $emergency->asArray(['id', 'apepat', 'apemat', 'nombres', 'avatar', 'phone', 'startedAt']);
+                $dataUser['location'] = $location;
+
+                $socketService->send([
+                    ['id'=>implode(',', $idsUser), 'event'=>Constante::EVENT_EMEGENCY_UPDATE, 'data'=>$dataUser],
+                    ['id'=>$emergency->getId(), 'event'=>Constante::EVENT_EMEGENCY_UPDATE, 'data'=>['location'=>$location], 'users'=>count($idsUser)]
+                ]);
             }
             $this->getDoctrine()->getManager()->flush();
 

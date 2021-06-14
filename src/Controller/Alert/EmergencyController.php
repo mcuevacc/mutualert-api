@@ -40,6 +40,24 @@ class EmergencyController extends AbstractController
         }
     }
 
+    public function read(Request $request, Read $read, int $id): Response
+    {
+        try{
+            $emergency = $this->getDoctrine()->getRepository('App:Alert\Emergency')->findOneById($id);
+            if(!$emergency){
+                return $this->json(['success'=>false,
+                                    'msg'=>'Emergencia no escontrado'],
+                    Constante::HTTP_NOT_FOUND);
+            }
+            return $this->json(['success'=>true, 'data'=>$emergency->asArray()]);
+
+        }catch (\Exception $e){
+            return $this->json(['success'=>false,
+                                'msg'=>$e->getMessage()],
+                Constante::HTTP_SERVER_ERROR);
+        }
+    }
+
     public function start(Request $request, Read $read, Jwt $jwt, EmergencyService $emergencyService, SocketService $socketService): Response
     {
         try{
@@ -55,6 +73,9 @@ class EmergencyController extends AbstractController
                                     'msg'=>'No se encontro al parametro ('.$faltante.')'],
                     Constante::HTTP_BAD_REQUEST);
             }
+            $latitude = (float) $latitude;
+            $longitude = (float) $longitude;
+            $accuracy = (float) $accuracy;
             
             $state = $user->getState();
             if( $state->getInAlert() ){
@@ -142,9 +163,14 @@ class EmergencyController extends AbstractController
             $this->getDoctrine()->getManager()->flush();
             $this->getDoctrine()->getConnection()->commit();
 
-            $socketService->send(['id'=>implode(',', $emergency->getAUserAlert()),
-                'event'=>Constante::EVENT_EMEGENCY_END, 'data'=>$emergency->getId()]);
-
+            $socketService->send([[
+                    'id'=>implode(',', $emergency->getAUserAlert()),
+                    'event'=>Constante::EVENT_EMEGENCY_END,
+                    'data'=>$emergency->getId()
+                ],[
+                    'id'=>$emergency->getId(),
+                    'event'=>Constante::EVENT_EMEGENCY_END
+            ]]);
             return $this->json(['success'=>true]);
 
         }catch (\Exception $e){
