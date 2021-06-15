@@ -145,6 +145,7 @@ class EmergencyController extends AbstractController
                                     'msg'=>'El modo emergencia ya está desactivado'],
                     Constante::HTTP_CONFLICT);
             }
+            $finish = date_create();
 
             $this->getDoctrine()->getConnection()->beginTransaction();
             
@@ -156,7 +157,7 @@ class EmergencyController extends AbstractController
                 'idUser'=>$user->getId(),
                 'isActive'=>true
             ]);
-            $emergency->setFinishedAt(date_create());
+            $emergency->setFinishedAt($finish);
             $emergency->setIsActive(false);
             $this->getDoctrine()->getManager()->persist($emergency);
 
@@ -168,8 +169,10 @@ class EmergencyController extends AbstractController
                     'event'=>Constante::EVENT_EMEGENCY_END,
                     'data'=>$emergency->getId()
                 ],[
-                    'id'=>$emergency->getId(),
-                    'event'=>Constante::EVENT_EMEGENCY_END
+                    'id'=>''.$emergency->getId(),
+                    'type'=>Constante::TYPE_EMEGENCY,
+                    'event'=>Constante::EVENT_EMEGENCY_END,
+                    'data'=>$finish
             ]]);
             return $this->json(['success'=>true]);
 

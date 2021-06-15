@@ -73,8 +73,10 @@ class StateController extends AbstractController
                 $dataUser['location'] = $location;
 
                 $socketService->send([
-                    ['id'=>implode(',', $idsUser), 'event'=>Constante::EVENT_EMEGENCY_UPDATE, 'data'=>$dataUser],
-                    ['id'=>$emergency->getId(), 'event'=>Constante::EVENT_EMEGENCY_UPDATE, 'data'=>['location'=>$location], 'users'=>count($idsUser)]
+                    ['id'=>implode(',', $idsUser),
+                        'event'=>Constante::EVENT_EMEGENCY_UPDATE, 'data'=>$dataUser],
+                    ['id'=>''.$emergency->getId(), 'type'=>Constante::TYPE_EMEGENCY,
+                        'event'=>Constante::EVENT_EMEGENCY_UPDATE, 'data'=>['location'=>$location, 'users'=>count($idsUser)]]
                 ]);
             }
             $this->getDoctrine()->getManager()->flush();
