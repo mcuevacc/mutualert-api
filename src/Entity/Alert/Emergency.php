@@ -59,7 +59,7 @@ class Emergency
             'apemat' => $this->idUser->getProfile()->getApemat(),
             'nombres' => $this->idUser->getProfile()->getNombres(),
             'avatar' => $this->idUser->getProfile()->getAvatar(),
-            'phone' => $this->idUser->getUsername(),
+            'phone' => $this->idUser->getConfig()->getShowPhone() ? $this->idUser->getUsername() : null,
             'isActive' => $this->isActive,
             'startedAt' => $this->startedAt,
             'finishedAt' => $this->finishedAt,

@@ -8,6 +8,7 @@ parameters:
     app.socket: '%env(resolve:APP_SOCKET)%'
     app.jwt_key: '%env(resolve:APP_JWT_KEY)%'
     firebase.web_api_key: '%env(resolve:FIREBASE_WEB_API_KEY)%'
+    aws.sqs_url: '%env(resolve:AWS_SQS)%'
 
 services:
     # default configuration for services in *this* file

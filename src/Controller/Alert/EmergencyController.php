@@ -107,8 +107,8 @@ class EmergencyController extends AbstractController
             $this->getDoctrine()->getManager()->flush();
             $this->getDoctrine()->getConnection()->commit();
 
-            $idsUser = $emergencyService->getIdsUser($state,
-                $user->getConfig(),$user->getContacts(), $user->getId(), $user->getUsername());
+            $idsUser = $emergencyService->getIdsUser($state, $user->getConfig(), $user->getContacts(),
+                $user->getId(), $user->getUsername(), $user->getProfile(), $emergency->getId());
 
             $emergency->setAUserAlert($idsUser);
             $this->getDoctrine()->getManager()->persist($emergency);

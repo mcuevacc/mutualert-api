@@ -26,6 +26,11 @@ class Config
     private $idUser;
 
     /**
+     * @ORM\Column(name="show_phone", type="boolean")
+     */
+    private $showPhone=FALSE;
+
+    /**
      * @ORM\Column(type="string", length=5, nullable=true)
      */
     private $alertRadio = Constante::ALERT_RADIO;
@@ -53,6 +58,7 @@ class Config
     public function asArray($filtro=NULL): ?array
     {
         $response = [
+            'showPhone' => $this->showPhone,
             'alertRadio' => $this->alertRadio,
             'alertOther' => $this->alertOther,
             'notifyOther' => $this->notifyOther,
@@ -139,6 +145,18 @@ class Config
     public function setIdUser(?Account $idUser): self
     {
         $this->idUser = $idUser;
+
+        return $this;
+    }
+
+    public function getShowPhone(): ?bool
+    {
+        return $this->showPhone;
+    }
+
+    public function setShowPhone(bool $showPhone): self
+    {
+        $this->showPhone = $showPhone;
 
         return $this;
     }

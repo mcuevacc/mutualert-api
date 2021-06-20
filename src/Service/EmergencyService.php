@@ -3,14 +3,21 @@
 namespace App\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Aws\Sqs\SqsClient;
+use App\Service\Util\Constante;
+use App\Service\Aws\SqsService;
 
 class EmergencyService
 {
     private $em;
+    private $container;
+    private $sqsClient;
 
-    public function __construct(EntityManagerInterface $entityManager)
-    {
+    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, SqsClient $client) {
         $this->em = $entityManager;
+        $this->container = $container;
+        $this->sqsClient = $client;
     }
 
     public function list($uId) {
@@ -23,12 +30,21 @@ class EmergencyService
         return $query->getResult();
     }
 
-    public function getIdsUser($uState, $uConfig, $uContacts, $uId, $uPhone) {
+    public function getIdsUser($uState, $uConfig, $uContacts, $uId, $uPhone, $uProfile, $idEmergency) {
         $idsUsers = []; //Ids de los usuarios que seran notificados por la emergencia
 
         $phoneContacts = []; //Teléfono de los contactos agregados
         foreach($uContacts as $contact){
             $phoneContacts[] = $contact->getPhone();
+        }
+        
+        if(count($phoneContacts)){
+            $sqsService = new SqsService($this->container, $this->sqsClient);
+            $message = 'Soy '.$uProfile->getNombres().', necesito tu ayuda: '.$this->container->getParameter('app.socket').'?id='.$idEmergency;
+            $key = Constante::TYPE_EMEGENCY.'-'.$idEmergency;
+            foreach($phoneContacts as $phoneContact){
+                $sqsService->enqueueSms($phoneContact, $message, $key);
+            }
         }
         
         $userContacts = []; //Usuarios que son nuestro contacto

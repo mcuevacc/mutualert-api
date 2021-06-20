@@ -17,7 +17,7 @@ class SocketService
     public function send($data){
         try{
             $client = new Client();
-            $resp = $client->request('POST', $this->container->getParameter('app.socket').'/socket', [
+            $resp = $client->request('POST', $this->container->getParameter('app.socket').'socket', [
                 'http_errors' => false,
                 'json' => $data
             ]);
