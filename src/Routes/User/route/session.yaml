@@ -1,0 +1,5 @@
+## --- User Session FCM
+user/session/fcm:
+  path: /fcm
+  controller: App\Controller\User\SessionController::fcm
+  methods: [POST]

@@ -7,7 +7,9 @@ parameters:
     app.domain: '%env(resolve:APP_DOMAIN)%'
     app.socket: '%env(resolve:APP_SOCKET)%'
     app.jwt_key: '%env(resolve:APP_JWT_KEY)%'
+    firebase.project_id: '%env(resolve:FIREBASE_PROJECT_ID)%'
     firebase.web_api_key: '%env(resolve:FIREBASE_WEB_API_KEY)%'
+    firebase.cm_key: '%env(resolve:FIREBASE_CM_KEY)%'
     aws.sqs_url: '%env(resolve:AWS_SQS)%'
 
 services:

@@ -17,3 +17,8 @@ UserProfile:
 UserState:
     resource: "route/state.yaml"
     prefix: /state/
+
+## --- User Session
+UserSession:
+    resource: "route/session.yaml"
+    prefix: /session/
