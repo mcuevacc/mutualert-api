@@ -36,6 +36,7 @@ class AuthController extends AbstractController
                 return $this->json([
                     'success' => true,
                     'data'=>[
+                        'userId' => $user->getId(),
                         'token' => $jwt->getToken($user),
                         'alert' => $user->getState()->getInAlert(),
                         'profile' => $user->getProfile()->asArray(['apepat','apemat','nombres','email','avatar'])
@@ -60,6 +61,7 @@ class AuthController extends AbstractController
             return $this->json([
                 'success' => true,
                 'data'=>[
+                    'userId' => $user->getId(),
                     'token' => $jwt->getToken($user),
                     'alert' => $user->getState()->getInAlert(),
                     'profile' => $user->getProfile()->asArray(['apepat','apemat','nombres','email','avatar'])
@@ -149,6 +151,7 @@ class AuthController extends AbstractController
             return $this->json([
                 'success' => true,
                 'data'=>[
+                    'userId' => $account->getId(),
                     'token' => $jwt->getToken($account),
                     'alert' => $state->getInAlert(),
                     'profile' => $profile->asArray(['apepat','apemat','nombres','email','avatar'])

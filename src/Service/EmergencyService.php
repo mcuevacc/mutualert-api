@@ -31,8 +31,6 @@ class EmergencyService
     }
 
     public function getIdsUser($uState, $uConfig, $uContacts, $uId, $uPhone, $uProfile, $idEmergency) {
-        $idsUsers = []; //Ids de los usuarios que seran notificados por la emergencia
-
         $phoneContacts = []; //Teléfono de los contactos agregados
         foreach($uContacts as $contact){
             $phoneContacts[] = $contact->getPhone();
@@ -50,65 +48,102 @@ class EmergencyService
         $userContacts = []; //Usuarios que son nuestro contacto
         if(count($phoneContacts)){
             $userContacts = $this->getUsersFromPhone($phoneContacts, $uId);
-            foreach($userContacts as $userContact){
-                $idsUsers[] = $userContact['id'];
+        }
+
+        $usersIContact = $this->getUsersIContact($uId, $uPhone);
+
+        $idsUsers = [];
+        $fcmUsers = [];
+        $notifyFromMyContact = [];
+        $notifyFromSelfContact = [];
+        foreach($userContacts as $userContact){
+            $idsUsers[] = $userContact['id'];
+            foreach($usersIContact as $key => $userIContact){
+                if($userIContact['id'] < $userContact['id']){
+                    continue;
+                } else if($userIContact['id'] == $userContact['id']) {
+                    if($userIContact['fcm']){
+                        $fcmUsers[] = $userIContact['id'];
+                        $notifyFromMyContact[] = $userIContact['fcm'];
+                    }
+                    unset($usersIContact[$key]);
+                } else {
+                    if($userContact['fcm']){
+                        $fcmUsers[] = $userContact['id'];
+                        $notifyFromSelfContact[] = $userContact['fcm'];
+                    }
+                }
+                break;
             }
         }
 
+        $aUsers = ['idsUsers' => $idsUsers,
+                    'fcmUsers' => $fcmUsers,
+                    'notifyUsers' =>[
+                        Constante::NOTIFY_EMERGENCY_FROM_MYCONTACT => $notifyFromMyContact,
+                        Constante::NOTIFY_EMERGENCY_FROM_SELFCONTACT => $notifyFromSelfContact,
+                        Constante::NOTIFY_EMERGENCY_FROM_DEFAULT => []
+                    ]];
+        
         //Si no queremos que otros sepan de la alerta
         //pero ya tengo contactos que saben de esa alerta
         if(!$uConfig->getAlertOther() && count($uContacts)){
-            return $idsUsers;
-        }
-        
-        $usersIContact = $this->getUsersIContact($uId, $uPhone, $idsUsers);
-        foreach($usersIContact as $userIContact){
-            $idsUsers[] = $userIContact['id'];
-        }
-        
-        $usersNear = $this->getUsersNear($uId, $uState->getGeoLocation(), $idsUsers);
-        foreach($usersNear as $userNear){
-            $idsUsers[] = $userNear['id'];
+            return $aUsers;
         }
 
-        return $idsUsers;
+        foreach($usersIContact as $userIContact){
+            $aUsers['idsUsers'][] = $userIContact['id'];
+            if($userIContact['fcm']){
+                $aUsers['fcmUsers'][] = $userIContact['id'];
+                $aUsers['notifyUsers'][Constante::NOTIFY_EMERGENCY_FROM_MYCONTACT][] = $userIContact['fcm'];
+            }
+        }
+        
+        $usersNear = $this->getUsersNear($uId, $uState->getGeoLocation(), $aUsers['idsUsers']);
+        foreach($usersNear as $userNear){
+            $aUsers['idsUsers'][] = $userNear['id'];
+        }
+
+        return $aUsers;
     }
 
     public function getUsersFromPhone($phoneContacts, $uId) {
-        $consult = 'SELECT E.id
+        $consult = 'SELECT E.id AS id, Se.fcm
                     FROM App:User\Account E
                     JOIN App:User\State S
+                    WITH S.idUser = E.id
                     JOIN App:User\Config C
-                    WHERE E.id = S.idUser
-                    AND E.id = C.idUser
-                    AND E.isActive = 1
+                    WITH C.idUser = E.id
+                    LEFT JOIN App:User\Session Se
+                    WITH Se.idUser = E.id
+                    WHERE E.isActive = 1
                     AND S.inAlert = 0
                     AND C.notifySelfContact = 1
                     AND E.id<>'.$uId.
-                    ' AND E.username IN ('.implode(',', $phoneContacts).')';
+                    ' AND E.username IN ('.implode(',', $phoneContacts).')
+                    ORDER BY id ASC';
         $query = $this->em->createQuery($consult);
         return $query->getResult();
     }
 
-    public function getUsersIContact($uId, $uPhone, $idsUsers) {
-        $consult = 'SELECT E.id
+    public function getUsersIContact($uId, $uPhone) {
+        $consult = 'SELECT E.id AS id, Se.fcm
                     FROM App:User\Account E
                     JOIN App:User\State S
-                    WHERE E.id = S.idUser
-                    AND E.isActive = 1
+                    WITH S.idUser = E.id
+                    LEFT JOIN App:User\Session Se
+                    WITH Se.idUser = E.id
+                    WHERE E.isActive = 1
                     AND S.inAlert = 0
                     AND E.id IN (
                         SELECT IDENTITY(A.idUser)
                         FROM App:Alert\Contact A
                         JOIN App:User\Config C
-                        WHERE A.idUser = C.idUser
-                        AND A.idUser<>'.$uId.
+                        WITH C.idUser = A.idUser
+                        WHERE A.idUser<>'.$uId.
                         ' AND C.notifyMyContact = 1
-                        AND A.phone LIKE \''.$uPhone.'\'';
-        if(count($idsUsers)){
-            $consult .= ' AND A.idUser NOT IN ('.implode(',', $idsUsers).')';
-        }
-        $consult .= ')';
+                        AND A.phone LIKE \''.$uPhone.'\')
+                    ORDER BY id ASC';
         $query = $this->em->createQuery($consult);
         return $query->getResult();
     }
@@ -117,10 +152,10 @@ class EmergencyService
         $consult = 'SELECT E.id, DISTANCE(S.geoLocation, POINT_STR(\''.$geoLocation.'\')) AS distance_m, C.alertRadio AS radio
                     FROM App:User\Account E
                     JOIN App:User\State S
+                    WITH S.idUser = E.id
                     JOIN App:User\Config C
-                    WHERE E.id = S.idUser
-                    AND E.id = C.idUser
-                    AND E.isActive = 1
+                    WITH C.idUser = E.id
+                    WHERE E.isActive = 1
                     AND S.inAlert = 0
                     AND C.notifyOther = 1
                     AND E.id<>'.$uId;

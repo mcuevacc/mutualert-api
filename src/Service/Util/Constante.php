@@ -22,7 +22,15 @@ class Constante
     const HTTP_CONFLICT = 409; //Conflicto con la peticion del cliente
     const HTTP_SERVER_ERROR = 500; //Error interno en el servidor
 
-    const TYPE_EMEGENCY = "emergency"; // Tipo emergencia 
+    const TYPE_EMEGENCY = "emergency"; //Tipo emergencia
+
+    const NOTIFY_EVENT_NOTIFY = "NOTIFY"; //Evento que indica mostrar notificacion
+    const NOTIFY_EVENT_PROCESS = "PROCESS"; //Evento que indica ejecutar un proceso
+    const NOTIFY_TYPE_EMERGENCY_INIT = "EMERGENCY_INIT"; //Mostrar notificacion de una emergencia
+    const NOTIFY_TYPE_EMERGENCY_END = "EMERGENCY_END"; //Cancelar la notificacion de una emergencia
+    const NOTIFY_EMERGENCY_FROM_MYCONTACT = "mycontact"; //Prioridad maxima del mensaje de la notificacion
+    const NOTIFY_EMERGENCY_FROM_SELFCONTACT = "selfcontact"; //Prioridad alta del mensaje de la notificacion
+    const NOTIFY_EMERGENCY_FROM_DEFAULT = "default"; //Prioridad default del mensaje de la notificacion
 
     const EVENT_EMEGENCY_INIT = "EMERGENCY_INIT"; //Evento que indica el inicio de la emergencia
     const EVENT_EMEGENCY_UPDATE = "EMERGENCY_UPDATE"; //Evento que indica una modificacion

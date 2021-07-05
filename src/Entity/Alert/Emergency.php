@@ -49,6 +49,11 @@ class Emergency
     /**
     * @ORM\Column(type="json")
     */
+    private $aUserFcm=[];
+
+    /**
+    * @ORM\Column(type="json")
+    */
     private $aLocation=[];
 
     public function asArray($filtro=NULL): ?array
@@ -64,6 +69,7 @@ class Emergency
             'startedAt' => $this->startedAt,
             'finishedAt' => $this->finishedAt,
             'aUserAlert' => $this->aUserAlert,
+            'aUserFcm' => $this->aUserFcm,
             'aLocation' => $this->aLocation
         ];
 
@@ -122,6 +128,18 @@ class Emergency
     public function setAUserAlert(array $aUserAlert): self
     {
         $this->aUserAlert = $aUserAlert;
+
+        return $this;
+    }
+
+    public function getAUserFcm(): ?array
+    {
+        return $this->aUserFcm;
+    }
+
+    public function setAUserFcm(array $aUserFcm): self
+    {
+        $this->aUserFcm = $aUserFcm;
 
         return $this;
     }

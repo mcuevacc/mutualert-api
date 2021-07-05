@@ -9,7 +9,9 @@ use App\Service\CRUD\Read;
 use App\Service\Util\Constante;
 use App\Service\Util\Jwt;
 use App\Service\EmergencyService;
+use App\Service\SessionService;
 use App\Service\Api\SocketService;
+use App\Service\Api\FirebaseService;
 use App\Entity\Alert\Emergency;
 use App\Model\Object\Point;
 
@@ -58,7 +60,7 @@ class EmergencyController extends AbstractController
         }
     }
 
-    public function start(Request $request, Read $read, Jwt $jwt, EmergencyService $emergencyService, SocketService $socketService): Response
+    public function start(Request $request, Read $read, Jwt $jwt, EmergencyService $emergencyService, SocketService $socketService, FirebaseService $firebaseService): Response
     {
         try{
             $decoded = $jwt->decodeToken($request->headers->get('token'), true);
@@ -107,10 +109,11 @@ class EmergencyController extends AbstractController
             $this->getDoctrine()->getManager()->flush();
             $this->getDoctrine()->getConnection()->commit();
 
-            $idsUser = $emergencyService->getIdsUser($state, $user->getConfig(), $user->getContacts(),
+            $aUsers = $emergencyService->getIdsUser($state, $user->getConfig(), $user->getContacts(),
                 $user->getId(), $user->getUsername(), $user->getProfile(), $emergency->getId());
 
-            $emergency->setAUserAlert($idsUser);
+            $emergency->setAUserAlert($aUsers['idsUsers']);
+            $emergency->setAUserFcm($aUsers['fcmUsers']);
             $this->getDoctrine()->getManager()->persist($emergency);
             $this->getDoctrine()->getManager()->flush();
                         
@@ -120,8 +123,24 @@ class EmergencyController extends AbstractController
                 'longitude'=>$longitude,
                 'accuracy'=>$accuracy
             ];
-            $socketService->send(['id'=>implode(',', $idsUser),
+            $socketService->send(['id'=>implode(',', $aUsers['idsUsers']),
                 'event'=>Constante::EVENT_EMEGENCY_INIT, 'data'=>$data]);
+
+            $payload = [
+                'event' => Constante::NOTIFY_EVENT_NOTIFY,
+                'type' => Constante::NOTIFY_TYPE_EMERGENCY_INIT,
+                'data' => $emergency->asArray(['id', 'apepat', 'apemat', 'nombres'])
+            ];
+            
+            $payload['origin'] = Constante::NOTIFY_EMERGENCY_FROM_MYCONTACT;
+            foreach($aUsers['notifyUsers'][Constante::NOTIFY_EMERGENCY_FROM_MYCONTACT] as $notificationKey){
+                $firebaseService->sendCM($notificationKey, $payload);
+            }
+
+            $payload['origin'] = Constante::NOTIFY_EMERGENCY_FROM_SELFCONTACT;
+            foreach($aUsers['notifyUsers'][Constante::NOTIFY_EMERGENCY_FROM_SELFCONTACT] as $notificationKey){
+                $firebaseService->sendCM($notificationKey, $payload);
+            }
 
             return $this->json(['success'=>true]);
 
@@ -132,7 +151,7 @@ class EmergencyController extends AbstractController
         }
     }
 
-    public function stop(Request $request, Read $read, Jwt $jwt, SocketService $socketService): Response
+    public function stop(Request $request, Read $read, Jwt $jwt, SocketService $socketService, SessionService $sessionService, FirebaseService $firebaseService): Response
     {
         try{
             $decoded = $jwt->decodeToken($request->headers->get('token'), true);
@@ -174,6 +193,20 @@ class EmergencyController extends AbstractController
                     'event'=>Constante::EVENT_EMEGENCY_END,
                     'data'=>$finish
             ]]);
+                    
+            if(count($emergency->getAUserFcm())){
+                $payload = [
+                    'event' => Constante::NOTIFY_EVENT_NOTIFY,
+                    'type' => Constante::NOTIFY_TYPE_EMERGENCY_END,
+                    'data' => $emergency->getId()
+                ];
+
+                $notifyUsers = $sessionService->getFcmTokens($emergency->getAUserFcm());
+                print_r($notifyUsers);
+                foreach($notifyUsers as $notifyUser){
+                    $firebaseService->sendCM($notifyUser['fcm'], $payload);
+                }
+            }
             return $this->json(['success'=>true]);
 
         }catch (\Exception $e){

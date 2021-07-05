@@ -101,4 +101,20 @@ class FirebaseService
         }
         return $respNotificationKey;
     }
+
+    public function sendCM($notificationKey, $data){
+        $respNotificationKey = null;
+
+        $client = new Client();
+        $resp = $client->request('POST', 'https://fcm.googleapis.com/fcm/send', [
+            'http_errors' => false,
+            'headers' => [
+                'Authorization' => 'key='.$this->container->getParameter('firebase.cm_key')
+            ],
+            'json' => [
+                'to' => $notificationKey,
+                'data'=>$data
+            ]
+        ]);
+    }
 }
