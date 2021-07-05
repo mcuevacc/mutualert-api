@@ -202,7 +202,6 @@ class EmergencyController extends AbstractController
                 ];
 
                 $notifyUsers = $sessionService->getFcmTokens($emergency->getAUserFcm());
-                print_r($notifyUsers);
                 foreach($notifyUsers as $notifyUser){
                     $firebaseService->sendCM($notifyUser['fcm'], $payload);
                 }
