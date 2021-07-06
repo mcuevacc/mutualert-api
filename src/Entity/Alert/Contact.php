@@ -38,12 +38,6 @@ class Contact
      */
     private $phone;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User\Account")
-     * @ORM\JoinColumn(name="id_contact", referencedColumnName="id", nullable=true)
-     */
-    private $idContact;
-
     public function asArray($filtro=NULL): ?array
     {
         $response = [
@@ -95,18 +89,6 @@ class Contact
     public function setIdUser(?Account $idUser): self
     {
         $this->idUser = $idUser;
-
-        return $this;
-    }
-
-    public function getIdContact(): ?Account
-    {
-        return $this->idContact;
-    }
-
-    public function setIdContact(?Account $idContact): self
-    {
-        $this->idContact = $idContact;
 
         return $this;
     }
