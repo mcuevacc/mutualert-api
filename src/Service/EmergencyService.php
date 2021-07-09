@@ -60,7 +60,7 @@ class EmergencyService
             $repeat = false;
             $idsUsers[] = $userContact['id'];
             foreach($usersIContact as $key => $userIContact){
-                if($userIContact['id'] < $userContact['id']){
+                if($userIContact['id'] < $userContact['id']) {
                     continue;
                 } else if($userIContact['id'] == $userContact['id']) {
                     if($userIContact['fcm']){
