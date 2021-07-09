@@ -57,6 +57,7 @@ class EmergencyService
         $notifyFromMyContact = [];
         $notifyFromSelfContact = [];
         foreach($userContacts as $userContact){
+            $repeat = false;
             $idsUsers[] = $userContact['id'];
             foreach($usersIContact as $key => $userIContact){
                 if($userIContact['id'] < $userContact['id']){
@@ -67,13 +68,14 @@ class EmergencyService
                         $notifyFromMyContact[] = $userIContact['fcm'];
                     }
                     unset($usersIContact[$key]);
-                } else {
-                    if($userContact['fcm']){
-                        $fcmUsers[] = $userContact['id'];
-                        $notifyFromSelfContact[] = $userContact['fcm'];
-                    }
+                    $repeat = true;
                 }
                 break;
+            }
+
+            if(!$repeat && $userContact['fcm']){
+                $fcmUsers[] = $userContact['id'];
+                $notifyFromSelfContact[] = $userContact['fcm'];
             }
         }
 
